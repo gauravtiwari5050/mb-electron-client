@@ -1,6 +1,5 @@
 import { IMagicBellNotificationService } from "./IMagicBellNotificationService";
 import { IMagicBellNotification } from "./IMagicBellNotification";
-import { IMagicBellAuthorizationParams } from "./IMagicBellAuthorizationParams";
 import { Result } from "../../util/Result";
 import MagicBellClient, { MagicBellConfigOptions } from "@magicbell/core";
 import { Emitter } from "mitt";
