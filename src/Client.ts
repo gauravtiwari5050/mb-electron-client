@@ -1,10 +1,16 @@
-const { Notification, shell } = require("electron");
-import MagicBellClient, { pushEventAggregator } from "@magicbell/core";
-          
+import { IMagicBellNotificationService } from "./services/magic_bell/IMagicBellNotificationService";
+import { MagicBellNotificationService } from "./services/magic_bell/MagicBellNotificationService";
+import { INativeNotificationService } from "./services/native_notifcation/INativeNotificationService";
+import { NativeNotificationService } from "./services/native_notifcation/NativeNotificationService";
+import  { pushEventAggregator } from "@magicbell/core";
+      
 export class Client {
     private apiKey: string;
     private userEmail: string;
     private verbose: boolean;
+
+    private magicBellService: IMagicBellNotificationService;
+    private nativeNotificationService: INativeNotificationService;
     constructor(params: {
       apiKey: string;
       userEmail: string;
@@ -12,30 +18,18 @@ export class Client {
       this.apiKey = params.apiKey;
       this.userEmail = params.userEmail;
       this.verbose = false;
+      this.nativeNotificationService = new NativeNotificationService();
+      this.magicBellService = new MagicBellNotificationService(this.nativeNotificationService, pushEventAggregator);
     }
 
     public enableLogs(flag: boolean) {
       this.verbose = flag;
     }
     public async start(): Promise<void> {
-        const client = await  MagicBellClient.createInstance({
-          apiKey: this.apiKey,
-          userEmail: this.userEmail,
-        });
-        pushEventAggregator.on("notifications.new", (notification) => {
-          const payload = {
-            title: notification.title,
-            body: notification.content,
-          };
-          const nativeNotification = new Notification(payload);
-          nativeNotification.on("click", (event: unknown, arg: unknown) => {
-            if (notification.actionUrl) {
-              shell.openExternal(notification.actionUrl);
-            }
-          });
-          nativeNotification.show();
-          client.getStore().fetchAndReset();
-        });
-        client.startRealTimeListener();
+      await this.magicBellService.authorize({
+        apiKey: this.apiKey,
+        userEmail: this.userEmail,
+      });
+      this.magicBellService.listen();
     }
 }
