@@ -14,9 +14,8 @@ const MagicBellNotificationService_1 = require("./services/magic_bell/MagicBellN
 const NativeNotificationService_1 = require("./services/native_notifcation/NativeNotificationService");
 const core_1 = require("@magicbell/core");
 class Client {
-    constructor(params) {
-        this.apiKey = params.apiKey;
-        this.userEmail = params.userEmail;
+    constructor(options) {
+        this.magicBellConfigOptions = options;
         this.verbose = false;
         this.nativeNotificationService = new NativeNotificationService_1.NativeNotificationService();
         this.magicBellService = new MagicBellNotificationService_1.MagicBellNotificationService(this.nativeNotificationService, core_1.pushEventAggregator);
@@ -26,10 +25,7 @@ class Client {
     }
     start() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.magicBellService.authorize({
-                apiKey: this.apiKey,
-                userEmail: this.userEmail,
-            });
+            yield this.magicBellService.authorize(this.magicBellConfigOptions);
             this.magicBellService.listen();
         });
     }

@@ -1,13 +1,10 @@
+import { MagicBellConfigOptions } from "@magicbell/core";
 export declare class Client {
-    private apiKey;
-    private userEmail;
+    private magicBellConfigOptions;
     private verbose;
     private magicBellService;
     private nativeNotificationService;
-    constructor(params: {
-        apiKey: string;
-        userEmail: string;
-    });
+    constructor(options: MagicBellConfigOptions);
     enableLogs(flag: boolean): void;
     start(): Promise<void>;
 }

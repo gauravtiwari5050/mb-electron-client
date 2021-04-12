@@ -2,21 +2,16 @@ import { IMagicBellNotificationService } from "./services/magic_bell/IMagicBellN
 import { MagicBellNotificationService } from "./services/magic_bell/MagicBellNotificationService";
 import { INativeNotificationService } from "./services/native_notifcation/INativeNotificationService";
 import { NativeNotificationService } from "./services/native_notifcation/NativeNotificationService";
-import  { pushEventAggregator } from "@magicbell/core";
+import  { pushEventAggregator, MagicBellConfigOptions } from "@magicbell/core";
       
 export class Client {
-    private apiKey: string;
-    private userEmail: string;
+    private magicBellConfigOptions: MagicBellConfigOptions;
     private verbose: boolean;
 
     private magicBellService: IMagicBellNotificationService;
     private nativeNotificationService: INativeNotificationService;
-    constructor(params: {
-      apiKey: string;
-      userEmail: string;
-    }) {
-      this.apiKey = params.apiKey;
-      this.userEmail = params.userEmail;
+    constructor(options: MagicBellConfigOptions) {
+      this.magicBellConfigOptions = options;
       this.verbose = false;
       this.nativeNotificationService = new NativeNotificationService();
       this.magicBellService = new MagicBellNotificationService(this.nativeNotificationService, pushEventAggregator);
@@ -26,10 +21,7 @@ export class Client {
       this.verbose = flag;
     }
     public async start(): Promise<void> {
-      await this.magicBellService.authorize({
-        apiKey: this.apiKey,
-        userEmail: this.userEmail,
-      });
+      await this.magicBellService.authorize(this.magicBellConfigOptions);
       this.magicBellService.listen();
     }
 }
